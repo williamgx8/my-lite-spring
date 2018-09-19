@@ -4,6 +4,7 @@ public interface BeanDefinition {
 
     String SCOPE_SINGLETON = "singleton";
     String SCOPE_PROTOTYPE = "prototype";
+    String SCOPE_DEFAULT = "";
 
     String getScope();
 

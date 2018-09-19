@@ -1,9 +1,12 @@
 package java2.org.litespring.context.support;
 
+import java2.org.litespring.core.io.ClassPathResource;
+import java2.org.litespring.core.io.Resource;
+
 import java.util.ArrayList;
 import java.util.List;
 
-public class ClassPathXmlApplicationContext extends AbstractXmlApplicationContext {
+public class ClassPathXmlApplicationContext extends AbstractApplicationContext {
 
     private List<String> configLocations;
 
@@ -17,17 +20,8 @@ public class ClassPathXmlApplicationContext extends AbstractXmlApplicationContex
     }
 
     @Override
-    public Object getBean(String beanName) {
-        return null;
+    protected Resource getResourceByPath(String path) {
+        return new ClassPathResource(path, this.getBeanClassLoader());
     }
 
-    @Override
-    public void setBeanClassLoader(ClassLoader classLoader) {
-
-    }
-
-    @Override
-    public ClassLoader getBeanClassLoader() {
-        return null;
-    }
 }
