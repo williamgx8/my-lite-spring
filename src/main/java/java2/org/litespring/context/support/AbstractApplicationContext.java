@@ -4,10 +4,12 @@ import java2.org.litespring.beans.factory.support.DefaultBeanFactory;
 import java2.org.litespring.beans.factory.xml.XmlBeanDefinitionReader;
 import java2.org.litespring.context.ApplicationContext;
 import java2.org.litespring.core.io.Resource;
+import java2.org.litespring.util.ClassUtils;
 
 public abstract class AbstractApplicationContext implements ApplicationContext {
 
     private DefaultBeanFactory beanFactory;
+    private ClassLoader classLoader;
 
     public AbstractApplicationContext(String configFile) {
         beanFactory = new DefaultBeanFactory();
@@ -21,17 +23,17 @@ public abstract class AbstractApplicationContext implements ApplicationContext {
 
     @Override
     public ClassLoader getBeanClassLoader() {
-        return beanFactory.getBeanClassLoader();
+        return classLoader != null ? classLoader : ClassUtils.getDefaultClassLoader();
     }
 
     @Override
     public void setBeanClassLoader(ClassLoader classLoader) {
-        beanFactory.setBeanClassLoader(classLoader);
+        this.classLoader = classLoader;
     }
 
     @Override
-    public Object getBean(String name) {
-        return beanFactory.getBean(name);
+    public Object getBean(String id) {
+        return beanFactory.getBean(id);
     }
 
 }

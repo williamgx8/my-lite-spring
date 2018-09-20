@@ -52,12 +52,12 @@ public class DefaultBeanFactory extends DefaultSingletonBeanRegistry implements 
     }
 
     @Override
-    public void registerBeanDefinition(String beanName, BeanDefinition beanDefinition) {
-        beanDefinitionMap.put(beanName, beanDefinition);
+    public void registerBeanDefinition(String id, BeanDefinition beanDefinition) {
+        beanDefinitionMap.put(id, beanDefinition);
     }
 
     @Override
-    public BeanDefinition getBeanDefinition(String beanName) {
-        return this.beanDefinitionMap.get(beanName);
+    public BeanDefinition getBeanDefinition(String id) {
+        return this.beanDefinitionMap.get(id);
     }
 }
