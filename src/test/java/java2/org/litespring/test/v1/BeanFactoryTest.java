@@ -6,7 +6,7 @@ import java2.org.litespring.beans.factory.BeanDefinitionStoreException;
 import java2.org.litespring.beans.factory.support.DefaultBeanFactory;
 import java2.org.litespring.beans.factory.xml.XmlBeanDefinitionReader;
 import java2.org.litespring.core.io.ClassPathResource;
-import java2.org.litespring.servcie.v1.PetStoreService;
+import java2.org.litespring.service.v1.PetStoreService;
 import org.junit.Assert;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -39,7 +39,7 @@ public class BeanFactoryTest {
 
         assertEquals(BeanDefinition.SCOPE_DEFAULT, bd.getScope());
 
-        assertEquals("java2.org.litespring.servcie.v1.PetStoreService", bd.getBeanClassName());
+        assertEquals("PetStoreService", bd.getBeanClassName());
 
         PetStoreService petStore = (PetStoreService) factory.getBean("petStore");
 

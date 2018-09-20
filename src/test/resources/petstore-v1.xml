@@ -5,6 +5,6 @@
            http://www.springframework.org/schema/beans/spring-beans.xsd">
 
     <bean id="petStore"
-          class="java2.org.litespring.servcie.v1.PetStoreService">
+          class="java2.org.litespring.service.v1.PetStoreService">
     </bean>
 </beans>

@@ -1,5 +1,7 @@
 package java2.org.litespring.beans;
 
+import java.util.List;
+
 public interface BeanDefinition {
 
     String SCOPE_SINGLETON = "singleton";
@@ -15,5 +17,7 @@ public interface BeanDefinition {
     boolean isPrototype();
 
     String getBeanClassName();
+
+    List<PropertyValue> getPropertyValues();
 
 }

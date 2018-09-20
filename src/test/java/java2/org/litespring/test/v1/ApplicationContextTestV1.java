@@ -11,7 +11,7 @@ import java.net.URL;
 import java2.org.litespring.context.ApplicationContext;
 import java2.org.litespring.util.ClassUtils;
 
-public class ApplicationContextTest {
+public class ApplicationContextTestV1 {
 
     @Test
     public void testGetBean() {
