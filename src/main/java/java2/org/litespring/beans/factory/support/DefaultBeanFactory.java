@@ -1,6 +1,7 @@
 package java2.org.litespring.beans.factory.support;
 
 import java2.org.litespring.beans.BeanDefinition;
+import java2.org.litespring.beans.factory.BeanCreationException;
 import java2.org.litespring.beans.factory.config.ConfigurableBeanFactory;
 import java2.org.litespring.util.ClassUtils;
 
@@ -23,8 +24,31 @@ public class DefaultBeanFactory extends DefaultSingletonBeanRegistry implements 
     }
 
     @Override
-    public Object getBean(String name) {
-        return null;
+    public Object getBean(String id) {
+        BeanDefinition beanDefinition = beanDefinitionMap.get(id);
+        if (beanDefinition == null) {
+            throw new BeanCreationException("cannot find BeanDefinition by id = " + id);
+        }
+        if (beanDefinition.isSingleton()) {
+            Object singleton = getSingleton(id);
+            if (singleton == null) {
+                singleton = createBean(beanDefinition);
+                this.registerSingleton(id, singleton);
+            }
+            return singleton;
+        }
+        return createBean(beanDefinition);
+    }
+
+    private Object createBean(BeanDefinition beanDefinition) {
+        ClassLoader cl = getBeanClassLoader();
+        String beanClassName = beanDefinition.getBeanClassName();
+        try {
+            Class<?> targetClass = cl.loadClass(beanClassName);
+            return targetClass.getDeclaredConstructor().newInstance();
+        } catch (Exception e) {
+            throw new BeanCreationException("create bean class " + beanClassName + " error", e);
+        }
     }
 
     @Override

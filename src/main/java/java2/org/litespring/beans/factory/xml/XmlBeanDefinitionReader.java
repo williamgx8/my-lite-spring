@@ -43,7 +43,7 @@ public class XmlBeanDefinitionReader {
                 if (element.attributeValue(SCOPE_ATTRIBUTE) != null) {
                     beanDefinition.setScope(element.attributeValue(SCOPE_ATTRIBUTE));
                 }
-                this.registry.registerBeanDefinition(beanName, beanDefinition);
+                this.registry.registerBeanDefinition(id, beanDefinition);
             }
 
         } catch (Exception e) {
