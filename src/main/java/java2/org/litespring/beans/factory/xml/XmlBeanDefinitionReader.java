@@ -4,6 +4,7 @@ import java2.org.litespring.beans.BeanDefinition;
 import java2.org.litespring.beans.PropertyValue;
 import java2.org.litespring.beans.factory.BeanDefinitionStoreException;
 import java2.org.litespring.beans.factory.config.RuntimeBeanReference;
+import java2.org.litespring.beans.factory.config.TypedStringValue;
 import java2.org.litespring.beans.factory.support.BeanDefinitionRegistry;
 import java2.org.litespring.beans.factory.support.GenericBeanDefinition;
 import java2.org.litespring.core.io.Resource;
@@ -97,7 +98,8 @@ public class XmlBeanDefinitionReader {
                 propertyValue = new PropertyValue(propertyName, runtimeBeanReference);
             } else {
                 String value = property.attributeValue(VALUE_ATTRIBUTE);
-
+                TypedStringValue typedStringValue = new TypedStringValue(value);
+                propertyValue = new PropertyValue(propertyName, typedStringValue);
             }
 
             beanDefinition.getPropertyValues().add(propertyValue);
