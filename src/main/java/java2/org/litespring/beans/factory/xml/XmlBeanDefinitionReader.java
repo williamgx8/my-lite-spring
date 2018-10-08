@@ -8,6 +8,8 @@ import java2.org.litespring.beans.factory.config.TypedStringValue;
 import java2.org.litespring.beans.factory.support.BeanDefinitionRegistry;
 import java2.org.litespring.beans.factory.support.GenericBeanDefinition;
 import java2.org.litespring.core.io.Resource;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
@@ -31,6 +33,8 @@ public class XmlBeanDefinitionReader {
     public static final String NAME_ATTRIBUTE = "name";
 
     private BeanDefinitionRegistry registry;
+
+    protected final Log logger = LogFactory.getLog(getClass());
 
     public XmlBeanDefinitionReader(BeanDefinitionRegistry registry) {
         this.registry = registry;
@@ -76,35 +80,51 @@ public class XmlBeanDefinitionReader {
 
         GenericBeanDefinition beanDefinition = new GenericBeanDefinition(id, beanClassName);
 
+        parsePropertyElement(element, beanDefinition);
+        return beanDefinition;
+    }
+
+    private void parsePropertyElement(Element element, GenericBeanDefinition beanDefinition) {
         Iterator iterator = element.elementIterator(PROPERTY_ELEMENT);
         while (iterator.hasNext()) {
             Element property = (Element) iterator.next();
             boolean hasName = hasAttribute(property, NAME_ATTRIBUTE);
-            boolean hasRef = hasAttribute(property, REF_ATTRIBUTE);
-            boolean hasValue = hasAttribute(property, VALUE_ATTRIBUTE);
 
             if (!hasName) {
                 throw new IllegalArgumentException("Tag property must have name attribute");
             }
-            if (!hasRef && !hasValue) {
-                throw new IllegalArgumentException("Tag property must have ref or value");
-            }
 
             String propertyName = property.attributeValue(NAME_ATTRIBUTE);
-            PropertyValue propertyValue = null;
-            if (hasRef) {
-                String refValue = property.attributeValue(REF_ATTRIBUTE);
-                RuntimeBeanReference runtimeBeanReference = new RuntimeBeanReference(refValue);
-                propertyValue = new PropertyValue(propertyName, runtimeBeanReference);
-            } else {
-                String value = property.attributeValue(VALUE_ATTRIBUTE);
-                TypedStringValue typedStringValue = new TypedStringValue(value);
-                propertyValue = new PropertyValue(propertyName, typedStringValue);
-            }
+            Object val = parsePropertyValue(property, beanDefinition, propertyName);
+            PropertyValue propertyValue = new PropertyValue(propertyName, val);
 
             beanDefinition.getPropertyValues().add(propertyValue);
         }
-        return beanDefinition;
+    }
+
+    private Object parsePropertyValue(Element property, BeanDefinition bd, String propertyName) {
+        String elementName = (propertyName != null) ?
+                "<property> element for property '" + propertyName + "'" :
+                "<constructor-arg> element";
+
+        boolean hasRef = hasAttribute(property, REF_ATTRIBUTE);
+        boolean hasValue = hasAttribute(property, VALUE_ATTRIBUTE);
+        if (!hasRef && !hasValue) {
+            throw new IllegalArgumentException("Tag property must have ref or value");
+        }
+
+        if (hasRef) {
+            String refValue = property.attributeValue(REF_ATTRIBUTE);
+            RuntimeBeanReference runtimeBeanReference = new RuntimeBeanReference(refValue);
+            return runtimeBeanReference;
+        } else if (hasValue) {
+            String value = property.attributeValue(VALUE_ATTRIBUTE);
+            TypedStringValue typedStringValue = new TypedStringValue(value);
+            return typedStringValue;
+        } else {
+            throw new RuntimeException(elementName + " must specify a ref or value");
+        }
+
     }
 
     private boolean hasAttribute(Element element, String name) {

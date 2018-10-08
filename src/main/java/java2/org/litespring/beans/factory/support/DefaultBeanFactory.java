@@ -1,10 +1,12 @@
 package java2.org.litespring.beans.factory.support;
 
 import java2.org.litespring.beans.BeanDefinition;
+import java2.org.litespring.beans.PropertyValue;
 import java2.org.litespring.beans.factory.BeanCreationException;
 import java2.org.litespring.beans.factory.config.ConfigurableBeanFactory;
 import java2.org.litespring.util.ClassUtils;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -45,10 +47,20 @@ public class DefaultBeanFactory extends DefaultSingletonBeanRegistry implements 
         String beanClassName = beanDefinition.getBeanClassName();
         try {
             Class<?> targetClass = cl.loadClass(beanClassName);
-            return targetClass.getDeclaredConstructor().newInstance();
+            Object instance = targetClass.getDeclaredConstructor().newInstance();
+            populateBean(beanDefinition, instance);
+            return instance;
         } catch (Exception e) {
             throw new BeanCreationException("create bean class " + beanClassName + " error", e);
         }
+    }
+
+    private void populateBean(BeanDefinition bd, Object bean) {
+        List<PropertyValue> propertyValues = bd.getPropertyValues();
+        if (propertyValues.size() == 0) {
+            return;
+        }
+
     }
 
     @Override

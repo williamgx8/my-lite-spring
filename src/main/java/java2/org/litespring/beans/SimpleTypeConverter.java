@@ -1,9 +1,11 @@
 package java2.org.litespring.beans;
 
+import java2.org.litespring.beans.propertyeditors.CustomBooleanEditor;
 import java2.org.litespring.beans.propertyeditors.CustomNumberEditor;
 import java2.org.litespring.util.ClassUtils;
 
 import java.beans.PropertyEditor;
+import java.util.HashMap;
 import java.util.Map;
 
 public class SimpleTypeConverter implements TypeConverter {
@@ -43,13 +45,14 @@ public class SimpleTypeConverter implements TypeConverter {
 
     public PropertyEditor getDefaultEditor(Class<?> requiredType) {
         if (defaultEditors == null) {
+            this.defaultEditors = new HashMap<>();
             createDefaultEditors();
         }
         return defaultEditors.get(requiredType);
     }
 
     private void createDefaultEditors() {
-        this.defaultEditors.put(int.class, new CustomNumberEditor(int.class, false));
         this.defaultEditors.put(Integer.class, new CustomNumberEditor(Integer.class, true));
+        this.defaultEditors.put(Boolean.class, new CustomBooleanEditor(true));
     }
 }
