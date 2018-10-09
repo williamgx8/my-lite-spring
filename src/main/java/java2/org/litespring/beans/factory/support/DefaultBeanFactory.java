@@ -2,10 +2,16 @@ package java2.org.litespring.beans.factory.support;
 
 import java2.org.litespring.beans.BeanDefinition;
 import java2.org.litespring.beans.PropertyValue;
+import java2.org.litespring.beans.SimpleTypeConverter;
 import java2.org.litespring.beans.factory.BeanCreationException;
 import java2.org.litespring.beans.factory.config.ConfigurableBeanFactory;
 import java2.org.litespring.util.ClassUtils;
 
+import java.beans.BeanInfo;
+import java.beans.IntrospectionException;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -43,15 +49,20 @@ public class DefaultBeanFactory extends DefaultSingletonBeanRegistry implements 
     }
 
     private Object createBean(BeanDefinition beanDefinition) {
+        Object instance = instantiateBean(beanDefinition);
+        populateBean(beanDefinition, instance);
+        return instance;
+    }
+
+    private Object instantiateBean(BeanDefinition bd) {
         ClassLoader cl = getBeanClassLoader();
-        String beanClassName = beanDefinition.getBeanClassName();
+        String beanClassName = bd.getBeanClassName();
         try {
             Class<?> targetClass = cl.loadClass(beanClassName);
             Object instance = targetClass.getDeclaredConstructor().newInstance();
-            populateBean(beanDefinition, instance);
             return instance;
         } catch (Exception e) {
-            throw new BeanCreationException("create bean class " + beanClassName + " error", e);
+            throw new BeanCreationException("create bean for " + beanClassName + " failed", e);
         }
     }
 
@@ -61,6 +72,34 @@ public class DefaultBeanFactory extends DefaultSingletonBeanRegistry implements 
             return;
         }
 
+        BeanDefinitionValueResolver bdvr = new BeanDefinitionValueResolver(this);
+        SimpleTypeConverter simpleTypeConverter = new SimpleTypeConverter();
+
+        try {
+            BeanInfo beanInfo = Introspector.getBeanInfo(bean.getClass());
+            PropertyDescriptor[] propertyDescriptors = beanInfo.getPropertyDescriptors();
+
+            for (PropertyValue pv : propertyValues) {
+                String propertyName = pv.getName();
+                Object originalValue = pv.getValue();
+                Object resolvedValue = bdvr.resolveValueIfNecessary(originalValue);
+
+                for (PropertyDescriptor pd : propertyDescriptors) {
+                    if (!pd.getName().equals(propertyName)) {
+                        continue;
+                    }
+
+                    Object convertedValue = simpleTypeConverter.convertIfNecessary(resolvedValue, pd.getPropertyType());
+                    pd.getWriteMethod().invoke(bean, convertedValue);
+                }
+            }
+        } catch (IntrospectionException e) {
+            throw new BeanCreationException("Failed to obtain BeanInfo for class [" + bd.getBeanClassName() + "]", e);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

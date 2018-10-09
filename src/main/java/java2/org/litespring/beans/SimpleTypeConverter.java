@@ -53,6 +53,8 @@ public class SimpleTypeConverter implements TypeConverter {
 
     private void createDefaultEditors() {
         this.defaultEditors.put(Integer.class, new CustomNumberEditor(Integer.class, true));
+        this.defaultEditors.put(int.class, new CustomNumberEditor(Integer.class, false));
         this.defaultEditors.put(Boolean.class, new CustomBooleanEditor(true));
+        this.defaultEditors.put(boolean.class, new CustomBooleanEditor(false));
     }
 }
