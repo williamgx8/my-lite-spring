@@ -8,6 +8,9 @@ import java.beans.PropertyEditor;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * 负责简单数据类型和string之间的转换，具体会调用具体类型的PropertyEditor
+ */
 public class SimpleTypeConverter implements TypeConverter {
     private Map<Class<?>, PropertyEditor> defaultEditors;
 

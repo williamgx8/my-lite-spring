@@ -28,6 +28,9 @@ public class CustomNumberEditor extends PropertyEditorSupport {
         this.allowEmpty = allowEmpty;
     }
 
+    /**
+     * 将所有的  string  -->  number， 而不是在getValue的时候进行转化
+     */
     @Override
     public void setAsText(String text) throws IllegalArgumentException {
         if (this.allowEmpty && !StringUtils.hasText(text)) {
@@ -42,27 +45,4 @@ public class CustomNumberEditor extends PropertyEditorSupport {
         }
     }
 
-    @Override
-    public void setValue(Object value) {
-        if (value instanceof Number) {
-            super.setValue(NumberUtils.convertNumberToTargetClass((Number) value, this.numberClass));
-        } else {
-            super.setValue(value);
-        }
-    }
-
-    @Override
-    public String getAsText() {
-        Object value = getValue();
-        if (value == null) {
-            return "";
-        }
-        if (this.numberFormat != null) {
-            // Use NumberFormat for rendering value.
-            return this.numberFormat.format(value);
-        } else {
-            // Use toString method for rendering value.
-            return value.toString();
-        }
-    }
 }

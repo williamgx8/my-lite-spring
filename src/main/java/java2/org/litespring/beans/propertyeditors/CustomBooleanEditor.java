@@ -33,6 +33,9 @@ public class CustomBooleanEditor extends PropertyEditorSupport {
         this.allowEmpty = allowEmpty;
     }
 
+    /**
+     * 将 string  -->  Boolean
+     */
     @Override
     public void setAsText(String text) throws IllegalArgumentException {
         String input = (text != null ? text.trim() : null);
@@ -53,17 +56,6 @@ public class CustomBooleanEditor extends PropertyEditorSupport {
             setValue(Boolean.FALSE);
         } else {
             throw new IllegalArgumentException("Invalid boolean value [" + text + "]");
-        }
-    }
-
-    @Override
-    public String getAsText() {
-        if (Boolean.TRUE.equals(getValue())) {
-            return (this.trueString != null ? this.trueString : VALUE_TRUE);
-        } else if (Boolean.FALSE.equals(getValue())) {
-            return (this.falseString != null ? this.falseString : VALUE_FALSE);
-        } else {
-            return "";
         }
     }
 }
