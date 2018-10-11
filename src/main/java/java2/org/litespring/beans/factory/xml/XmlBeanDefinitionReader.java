@@ -3,13 +3,12 @@ package java2.org.litespring.beans.factory.xml;
 import java2.org.litespring.beans.BeanDefinition;
 import java2.org.litespring.beans.PropertyValue;
 import java2.org.litespring.beans.factory.BeanDefinitionStoreException;
+import java2.org.litespring.beans.factory.config.ConstructorArgumentValues;
 import java2.org.litespring.beans.factory.config.RuntimeBeanReference;
 import java2.org.litespring.beans.factory.config.TypedStringValue;
 import java2.org.litespring.beans.factory.support.BeanDefinitionRegistry;
 import java2.org.litespring.beans.factory.support.GenericBeanDefinition;
 import java2.org.litespring.core.io.Resource;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
@@ -32,9 +31,9 @@ public class XmlBeanDefinitionReader {
 
     public static final String NAME_ATTRIBUTE = "name";
 
-    private BeanDefinitionRegistry registry;
+    public static final String CONSTRUCTOR_ARG_ELEMENT = "constructor-arg";
 
-    protected final Log logger = LogFactory.getLog(getClass());
+    private BeanDefinitionRegistry registry;
 
     public XmlBeanDefinitionReader(BeanDefinitionRegistry registry) {
         this.registry = registry;
@@ -81,6 +80,7 @@ public class XmlBeanDefinitionReader {
         GenericBeanDefinition beanDefinition = new GenericBeanDefinition(id, beanClassName);
 
         parsePropertyElement(element, beanDefinition);
+        parseConstructorArgElements(element, beanDefinition);
         return beanDefinition;
     }
 
@@ -125,6 +125,23 @@ public class XmlBeanDefinitionReader {
             throw new RuntimeException(elementName + " must specify a ref or value");
         }
 
+    }
+
+    private void parseConstructorArgElements(Element element, BeanDefinition bd) {
+        Iterator iterator = element.elementIterator(CONSTRUCTOR_ARG_ELEMENT);
+        while (iterator.hasNext()) {
+            Element constructorArgElement = (Element) iterator.next();
+            boolean hasRef = hasAttribute(constructorArgElement, REF_ATTRIBUTE);
+            boolean hasValue = hasAttribute(constructorArgElement, VALUE_ATTRIBUTE);
+
+            if (!hasRef && !hasValue) {
+                throw new IllegalArgumentException("constructor-arg must have ref or value");
+            }
+
+            Object value = parsePropertyValue(constructorArgElement, bd, null);
+            ConstructorArgumentValues.ValueHolder valueHolder = new ConstructorArgumentValues.ValueHolder(value);
+            bd.getConstructorArgumentValues().addArgumentValue(valueHolder);
+        }
     }
 
     private boolean hasAttribute(Element element, String name) {

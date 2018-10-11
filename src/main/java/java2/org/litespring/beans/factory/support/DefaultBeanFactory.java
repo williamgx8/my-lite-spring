@@ -58,6 +58,12 @@ public class DefaultBeanFactory extends DefaultSingletonBeanRegistry implements 
         ClassLoader cl = getBeanClassLoader();
         String beanClassName = bd.getBeanClassName();
         try {
+            if (bd.hasConstructorArgumentValues()) {
+                ConstructorResolver constructorResolver = new ConstructorResolver(this);
+                Object instance = constructorResolver.autowireConstructor(bd);
+                return instance;
+            }
+
             Class<?> targetClass = cl.loadClass(beanClassName);
             Object instance = targetClass.getDeclaredConstructor().newInstance();
             return instance;
