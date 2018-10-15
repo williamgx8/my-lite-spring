@@ -7,6 +7,10 @@ public class ClassUtils {
     private static final Map<Class<?>, Class<?>> primitiveWrapperTypeMap = new IdentityHashMap<>(8);
     private static final Map<Class<?>, Class<?>> primitiveTypeToWrapperMap = new IdentityHashMap<>(8);
 
+    private static final char PACKAGE_SEPARATOR = '.';
+
+    private static final char PATH_SEPARATOR = '/';
+
     static {
         primitiveWrapperTypeMap.put(Boolean.class, boolean.class);
         primitiveWrapperTypeMap.put(Byte.class, byte.class);
@@ -56,5 +60,15 @@ public class ClassUtils {
     public static boolean isAssignableValue(Class<?> type, Object value) {
         Assert.notNull(type, "Type must not be null");
         return (value != null ? isAssignable(type, value.getClass()) : !type.isPrimitive());
+    }
+
+    public static String convertClassNameToResourcePath(String className) {
+        Assert.notNull(className, "Class name must not be null");
+        return className.replace(PACKAGE_SEPARATOR, PATH_SEPARATOR);
+    }
+
+    public static String convertResourcePathToClassName(String resourcePath) {
+        Assert.notNull(resourcePath, "Resource path must not be null");
+        return resourcePath.replace(PATH_SEPARATOR, PACKAGE_SEPARATOR);
     }
 }
