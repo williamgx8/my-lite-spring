@@ -1,7 +1,10 @@
 package java2.org.litespring.test.v4;
 
 import java2.org.litespring.beans.BeanDefinition;
+import java2.org.litespring.beans.factory.annotation.ScannedGenericBeanDefinition;
 import java2.org.litespring.beans.factory.support.DefaultBeanFactory;
+import java2.org.litespring.core.annotation.AnnotationAttributes;
+import java2.org.litespring.core.type.AnnotationMetadata;
 import org.junit.Assert;
 
 public class AnnotationScanner {
@@ -12,29 +15,29 @@ public class AnnotationScanner {
     }
 
     public void scanTest(String annotation) {
-//        {
-//            BeanDefinition bd = factory.getBeanDefinition("petStore");
-//            Assert.assertTrue(bd instanceof ScannedGenericBeanDefinition);
-//            ScannedGenericBeanDefinition sbd = (ScannedGenericBeanDefinition) bd;
-//            AnnotationMetadata amd = sbd.getMetadata();
-//
-//            Assert.assertTrue(amd.hasAnnotation(annotation));
-//            AnnotationAttributes attributes = amd.getAnnotationAttributes(annotation);
-//            Assert.assertEquals("petStore", attributes.get("value"));
-//        }
-//        {
-//            BeanDefinition bd = factory.getBeanDefinition("accountDao");
-//            Assert.assertTrue(bd instanceof ScannedGenericBeanDefinition);
-//            ScannedGenericBeanDefinition sbd = (ScannedGenericBeanDefinition) bd;
-//            AnnotationMetadata amd = sbd.getMetadata();
-//            Assert.assertTrue(amd.hasAnnotation(annotation));
-//        }
-//        {
-//            BeanDefinition bd = factory.getBeanDefinition("itemDao");
-//            Assert.assertTrue(bd instanceof ScannedGenericBeanDefinition);
-//            ScannedGenericBeanDefinition sbd = (ScannedGenericBeanDefinition) bd;
-//            AnnotationMetadata amd = sbd.getMetadata();
-//            Assert.assertTrue(amd.hasAnnotation(annotation));
-//        }
+        {
+            BeanDefinition bd = factory.getBeanDefinition("petStore");
+            Assert.assertTrue(bd instanceof ScannedGenericBeanDefinition);
+            ScannedGenericBeanDefinition sbd = (ScannedGenericBeanDefinition) bd;
+            AnnotationMetadata amd = sbd.getMetadata();
+
+            Assert.assertTrue(amd.hasAnnotation(annotation));
+            AnnotationAttributes attributes = amd.getAnnotationAttributes(annotation);
+            Assert.assertEquals("petStore", attributes.get("value"));
+        }
+        {
+            BeanDefinition bd = factory.getBeanDefinition("accountDao");
+            Assert.assertTrue(bd instanceof ScannedGenericBeanDefinition);
+            ScannedGenericBeanDefinition sbd = (ScannedGenericBeanDefinition) bd;
+            AnnotationMetadata amd = sbd.getMetadata();
+            Assert.assertTrue(amd.hasAnnotation(annotation));
+        }
+        {
+            BeanDefinition bd = factory.getBeanDefinition("itemDao");
+            Assert.assertTrue(bd instanceof ScannedGenericBeanDefinition);
+            ScannedGenericBeanDefinition sbd = (ScannedGenericBeanDefinition) bd;
+            AnnotationMetadata amd = sbd.getMetadata();
+            Assert.assertTrue(amd.hasAnnotation(annotation));
+        }
     }
 }

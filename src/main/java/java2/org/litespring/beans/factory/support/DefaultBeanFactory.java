@@ -18,6 +18,10 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class DefaultBeanFactory extends DefaultSingletonBeanRegistry implements BeanDefinitionRegistry, ConfigurableBeanFactory {
 
+    /**
+     * key保存bean的唯一标示，可能是id属性，也可能是生成的某个唯一串，
+     * value保存class属性对应的封装对象BeanDefinition，该对象并不是创建的实例，其中最主要的就是包含了bean的全路径名
+     */
     private final Map<String, BeanDefinition> beanDefinitionMap = new ConcurrentHashMap<>(256);
     private ClassLoader beanClassLoader;
 
