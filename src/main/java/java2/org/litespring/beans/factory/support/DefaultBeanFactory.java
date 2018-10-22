@@ -4,7 +4,10 @@ import java2.org.litespring.beans.BeanDefinition;
 import java2.org.litespring.beans.PropertyValue;
 import java2.org.litespring.beans.SimpleTypeConverter;
 import java2.org.litespring.beans.factory.BeanCreationException;
+import java2.org.litespring.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor;
+import java2.org.litespring.beans.factory.config.BeanPostProcessor;
 import java2.org.litespring.beans.factory.config.ConfigurableBeanFactory;
+import java2.org.litespring.beans.factory.config.DependencyDescriptor;
 import java2.org.litespring.util.ClassUtils;
 
 import java.beans.BeanInfo;
@@ -12,6 +15,7 @@ import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -24,6 +28,8 @@ public class DefaultBeanFactory extends DefaultSingletonBeanRegistry implements 
      */
     private final Map<String, BeanDefinition> beanDefinitionMap = new ConcurrentHashMap<>(256);
     private ClassLoader beanClassLoader;
+
+    private final List<BeanPostProcessor> beanPostProcessors = new ArrayList<>();
 
     @Override
     public void setBeanClassLoader(ClassLoader classLoader) {
@@ -120,5 +126,20 @@ public class DefaultBeanFactory extends DefaultSingletonBeanRegistry implements 
     @Override
     public BeanDefinition getBeanDefinition(String id) {
         return this.beanDefinitionMap.get(id);
+    }
+
+    @Override
+    public Object resolveDependency(DependencyDescriptor descriptor) {
+        return null;
+    }
+
+    @Override
+    public void addBeanPostProcessor(BeanPostProcessor beanPostProcessor) {
+        this.beanPostProcessors.add(beanPostProcessor);
+    }
+
+    @Override
+    public List<BeanPostProcessor> getBeanPostProcessors() {
+        return this.beanPostProcessors;
     }
 }

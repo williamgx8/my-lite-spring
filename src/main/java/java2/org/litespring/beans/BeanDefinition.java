@@ -28,4 +28,6 @@ public interface BeanDefinition {
 
     boolean hasConstructorArgumentValues();
 
+    Class<?> getBeanClass();
+
 }

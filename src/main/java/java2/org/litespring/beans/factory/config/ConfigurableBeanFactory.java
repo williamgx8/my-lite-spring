@@ -1,10 +1,14 @@
 package java2.org.litespring.beans.factory.config;
 
-import java2.org.litespring.beans.factory.BeanFactory;
+import java.util.List;
 
-public interface ConfigurableBeanFactory extends BeanFactory {
+public interface ConfigurableBeanFactory extends AutowireCapableBeanFactory {
 
     void setBeanClassLoader(ClassLoader classLoader);
 
     ClassLoader getBeanClassLoader();
+
+    void addBeanPostProcessor(BeanPostProcessor beanPostProcessor);
+
+    List<BeanPostProcessor> getBeanPostProcessors();
 }

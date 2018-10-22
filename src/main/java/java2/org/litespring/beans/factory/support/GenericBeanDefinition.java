@@ -1,6 +1,7 @@
 package java2.org.litespring.beans.factory.support;
 
 import java2.org.litespring.beans.BeanDefinition;
+import java2.org.litespring.beans.BeansException;
 import java2.org.litespring.beans.PropertyValue;
 import java2.org.litespring.beans.factory.config.ConstructorArgumentValues;
 
@@ -10,6 +11,7 @@ import java.util.List;
 public class GenericBeanDefinition implements BeanDefinition {
     private String id;
     private String beanClassName;
+    private Class<?> beanClass;
     private boolean isSingleton = true;
     private boolean isPrototype = false;
     private String scope = SCOPE_DEFAULT;
@@ -73,6 +75,15 @@ public class GenericBeanDefinition implements BeanDefinition {
     @Override
     public boolean hasConstructorArgumentValues() {
         return !getConstructorArgumentValues().isEmpty();
+    }
+
+    @Override
+    public Class<?> getBeanClass() {
+        try {
+            return Class.forName(this.beanClassName);
+        } catch (ClassNotFoundException e) {
+            throw new BeansException("bean class name " + this.beanClassName + " cannot match any Class");
+        }
     }
 
 }
