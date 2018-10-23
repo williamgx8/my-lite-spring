@@ -31,7 +31,7 @@ public class AutowiredAnnotationProcessorTest {
     };
 
     @Test
-    public void testGetInjectionMetadata() {
+    public void testGetInjectionMetadata() throws IllegalAccessException {
 
         AutowiredAnnotationBeanPostProcessor processor = new AutowiredAnnotationBeanPostProcessor();
         processor.setBeanFactory(beanFactory);
@@ -44,11 +44,11 @@ public class AutowiredAnnotationProcessorTest {
 
         PetStoreService petStore = new PetStoreService();
 
-//        injectionMetadata.inject(petStore);
-//
-//        Assert.assertTrue(petStore.getAccountDao() instanceof AccountDao);
-//
-//        Assert.assertTrue(petStore.getItemDao() instanceof ItemDao);
+        injectionMetadata.inject(petStore);
+
+        Assert.assertTrue(petStore.getAccountDao() instanceof AccountDao);
+
+        Assert.assertTrue(petStore.getItemDao() instanceof ItemDao);
     }
 
     private void assertFieldExists(List<InjectionMetadata.InjectedElement> elements, String fieldName) {

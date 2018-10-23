@@ -12,6 +12,6 @@ public class DependencyDescriptor {
     }
 
     public Class getDependencyType() {
-        return null;
+        return this.field.getType();
     }
 }

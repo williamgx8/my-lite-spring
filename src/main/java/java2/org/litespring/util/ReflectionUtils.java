@@ -45,11 +45,6 @@ public class ReflectionUtils {
     @FunctionalInterface
     public interface FieldCallback {
 
-        /**
-         * Perform an operation using the given field.
-         *
-         * @param field the field to operate on
-         */
         void doWith(Field field) throws IllegalArgumentException, IllegalAccessException;
     }
 
@@ -133,18 +128,6 @@ public class ReflectionUtils {
         rethrowRuntimeException(ex.getTargetException());
     }
 
-    /**
-     * Rethrow the given {@link Throwable exception}, which is presumably the
-     * <em>target exception</em> of an {@link InvocationTargetException}.
-     * Should only be called if no checked exception is expected to be thrown
-     * by the target method.
-     * <p>Rethrows the underlying exception cast to a {@link RuntimeException} or
-     * {@link Error} if appropriate; otherwise, throws an
-     * {@link UndeclaredThrowableException}.
-     *
-     * @param ex the exception to rethrow
-     * @throws RuntimeException the rethrown exception
-     */
     public static void rethrowRuntimeException(Throwable ex) {
         if (ex instanceof RuntimeException) {
             throw (RuntimeException) ex;

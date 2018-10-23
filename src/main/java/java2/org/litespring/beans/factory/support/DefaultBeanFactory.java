@@ -4,10 +4,10 @@ import java2.org.litespring.beans.BeanDefinition;
 import java2.org.litespring.beans.PropertyValue;
 import java2.org.litespring.beans.SimpleTypeConverter;
 import java2.org.litespring.beans.factory.BeanCreationException;
-import java2.org.litespring.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor;
 import java2.org.litespring.beans.factory.config.BeanPostProcessor;
 import java2.org.litespring.beans.factory.config.ConfigurableBeanFactory;
 import java2.org.litespring.beans.factory.config.DependencyDescriptor;
+import java2.org.litespring.beans.factory.config.InstantiationAwareBeanPostProcessor;
 import java2.org.litespring.util.ClassUtils;
 
 import java.beans.BeanInfo;
@@ -28,6 +28,7 @@ public class DefaultBeanFactory extends DefaultSingletonBeanRegistry implements 
      */
     private final Map<String, BeanDefinition> beanDefinitionMap = new ConcurrentHashMap<>(256);
     private ClassLoader beanClassLoader;
+    private boolean hasInstantiationAwareBeanPostProcessors;
 
     private final List<BeanPostProcessor> beanPostProcessors = new ArrayList<>();
 
@@ -68,6 +69,9 @@ public class DefaultBeanFactory extends DefaultSingletonBeanRegistry implements 
         ClassLoader cl = getBeanClassLoader();
         String beanClassName = bd.getBeanClassName();
         try {
+            /**
+             * 处理xml中<constructor></constructor>标签，选取恰当的构造器创建对象实例
+             */
             if (bd.hasConstructorArgumentValues()) {
                 ConstructorResolver constructorResolver = new ConstructorResolver(this);
                 Object instance = constructorResolver.autowireConstructor(bd);
@@ -83,6 +87,27 @@ public class DefaultBeanFactory extends DefaultSingletonBeanRegistry implements 
     }
 
     private void populateBean(BeanDefinition bd, Object bean) {
+        /**
+         * 解析@Autowired待注入内容，实现DI
+         */
+        if (this.hasInstantiationAwareBeanPostProcessors) {
+            for (BeanPostProcessor beanPostProcessor : this.beanPostProcessors) {
+                if (beanPostProcessor instanceof InstantiationAwareBeanPostProcessor) {
+                    ((InstantiationAwareBeanPostProcessor) beanPostProcessor).postProcessPropertyValues(bean, bd.getBeanClassName());
+                }
+            }
+        }
+
+        /**
+         * 解析xml中
+         * <p>
+         *     <bean id="xxx" class = "xxxx">
+         *         <property name = "xxx" value = "xxx"></property>
+         *         <property name = "xxx" ref = "xxx"></property>
+         *     </bean>
+         * </p>
+         * 两种类型
+         */
         List<PropertyValue> propertyValues = bd.getPropertyValues();
         if (propertyValues.size() == 0) {
             return;
@@ -109,6 +134,7 @@ public class DefaultBeanFactory extends DefaultSingletonBeanRegistry implements 
                     pd.getWriteMethod().invoke(bean, convertedValue);
                 }
             }
+
         } catch (IntrospectionException e) {
             throw new BeanCreationException("Failed to obtain BeanInfo for class [" + bd.getBeanClassName() + "]", e);
         } catch (IllegalAccessException e) {
@@ -130,12 +156,26 @@ public class DefaultBeanFactory extends DefaultSingletonBeanRegistry implements 
 
     @Override
     public Object resolveDependency(DependencyDescriptor descriptor) {
+        Class beanType = descriptor.getDependencyType();
+        for (BeanDefinition bd : this.beanDefinitionMap.values()) {
+
+            Class<?> beanClass = bd.getBeanClass();
+            /**
+             * 只能注入该类的子类
+             */
+            if (beanType.isAssignableFrom(beanClass)) {
+                Object bean = this.getBean(bd.getBeanClassName());
+                return bean;
+            }
+
+        }
         return null;
     }
 
     @Override
     public void addBeanPostProcessor(BeanPostProcessor beanPostProcessor) {
         this.beanPostProcessors.add(beanPostProcessor);
+        this.hasInstantiationAwareBeanPostProcessors = true;
     }
 
     @Override

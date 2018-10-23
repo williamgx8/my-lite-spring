@@ -1,22 +1,32 @@
 package java2.org.litespring.beans.factory.annotation;
 
-import java2.org.litespring.beans.factory.BeanFactory;
+import java2.org.litespring.beans.factory.config.AutowireCapableBeanFactory;
+import java2.org.litespring.beans.factory.config.DependencyDescriptor;
 
 import java.lang.reflect.Field;
 
 public class AutowiredFieldElement extends InjectionMetadata.InjectedElement {
 
-    private final Field field;
     private final boolean required;
-    private final BeanFactory beanFactory;
 
-    public AutowiredFieldElement(Field field, boolean required, BeanFactory beanFactory) {
-        this.field = field;
+    public AutowiredFieldElement(Field field, boolean required, AutowireCapableBeanFactory beanFactory) {
+        super(field, beanFactory);
         this.required = required;
-        this.beanFactory = beanFactory;
     }
 
     public Field getField() {
-        return null;
+        return (Field) member;
+    }
+
+    @Override
+    public void inject(Object target) throws IllegalAccessException {
+        Field field = getField();
+        DependencyDescriptor dependencyDescriptor = new DependencyDescriptor(field, this.required);
+        Object injectedValue = factory.resolveDependency(dependencyDescriptor);
+
+        if (injectedValue != null) {
+            field.setAccessible(true);
+            field.set(target, injectedValue);
+        }
     }
 }
