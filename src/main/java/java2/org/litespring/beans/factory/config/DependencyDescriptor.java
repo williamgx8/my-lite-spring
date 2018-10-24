@@ -12,6 +12,9 @@ public class DependencyDescriptor {
     }
 
     public Class getDependencyType() {
+        if (this.field == null) {
+            throw new RuntimeException("only support field dependency");
+        }
         return this.field.getType();
     }
 }
