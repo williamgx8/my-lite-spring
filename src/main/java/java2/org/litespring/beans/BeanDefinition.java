@@ -30,4 +30,7 @@ public interface BeanDefinition {
 
     Class<?> getBeanClass();
 
+    String getID();
+
+    void setID(String id);
 }

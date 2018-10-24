@@ -164,7 +164,7 @@ public class DefaultBeanFactory extends DefaultSingletonBeanRegistry implements 
              * 只能注入该类的子类
              */
             if (beanType.isAssignableFrom(beanClass)) {
-                Object bean = this.getBean(bd.getBeanClassName());
+                Object bean = this.getBean(bd.getID());
                 return bean;
             }
 

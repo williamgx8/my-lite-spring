@@ -38,10 +38,9 @@ public class ClassPathBeanDefinitionScanner {
 
         }
 
-        for (BeanDefinition candidate : beanDefinitions) {
-            registry.registerBeanDefinition(candidate.getBeanClassName(), candidate);
+        for (BeanDefinition beanDefinition : beanDefinitions) {
+            registry.registerBeanDefinition(beanDefinition.getID(), beanDefinition);
         }
-
     }
 
     private Set<BeanDefinition> findCandidateComponents(String basePackage) throws IOException {
@@ -53,8 +52,8 @@ public class ClassPathBeanDefinitionScanner {
             MetadataReader metadataReader = new SimpleMetadataReader(resource);
             if (metadataReader.getAnnotationMetadata().hasAnnotation(Component.class.getName())) {
                 ScannedGenericBeanDefinition scannedGenericBeanDefinition = new ScannedGenericBeanDefinition(metadataReader);
-                String beanName = this.beanNameGenerator.generateBeanName(scannedGenericBeanDefinition, this.registry);
-                registry.registerBeanDefinition(beanName, scannedGenericBeanDefinition);
+                String id = this.beanNameGenerator.generateBeanName(scannedGenericBeanDefinition, this.registry);
+                scannedGenericBeanDefinition.setID(id);
                 beanDefinitionSet.add(scannedGenericBeanDefinition);
             }
         }

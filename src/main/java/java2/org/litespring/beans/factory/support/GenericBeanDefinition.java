@@ -3,12 +3,18 @@ package java2.org.litespring.beans.factory.support;
 import java2.org.litespring.beans.BeanDefinition;
 import java2.org.litespring.beans.BeansException;
 import java2.org.litespring.beans.PropertyValue;
+import java2.org.litespring.beans.factory.BeanCreationException;
 import java2.org.litespring.beans.factory.config.ConstructorArgumentValues;
+import java2.org.litespring.util.ClassUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class GenericBeanDefinition implements BeanDefinition {
+    /**
+     * BeanDefinition的唯一标识，在Spring中不存在这个id属性，而是通过beanClassName得到的一个唯一标示，
+     * 没有用单独的变量保存
+     */
     private String id;
     private String beanClassName;
     private Class<?> beanClass;
@@ -79,11 +85,29 @@ public class GenericBeanDefinition implements BeanDefinition {
 
     @Override
     public Class<?> getBeanClass() {
-        try {
-            return Class.forName(this.beanClassName);
-        } catch (ClassNotFoundException e) {
-            throw new BeansException("bean class name " + this.beanClassName + " cannot match any Class");
+        if (this.beanClass == null) {
+            try {
+                resolveBeanClass(ClassUtils.getDefaultClassLoader());
+            } catch (ClassNotFoundException e) {
+                throw new BeanCreationException("resolve bean class error", e);
+            }
         }
+        return this.beanClass;
+    }
+
+    @Override
+    public String getID() {
+        return this.id;
+    }
+
+    @Override
+    public void setID(String id) {
+        this.id = id;
+    }
+
+    private void resolveBeanClass(ClassLoader classLoader) throws ClassNotFoundException {
+        Class<?> clazz = classLoader.loadClass(this.beanClassName);
+        this.beanClass = clazz;
     }
 
 }

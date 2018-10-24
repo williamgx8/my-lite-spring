@@ -81,6 +81,11 @@ public class AutowiredAnnotationBeanPostProcessor implements InstantiationAwareB
         List<InjectionMetadata.InjectedElement> elements = new ArrayList<>();
         ReflectionUtils.doWithLocalFields(targetClass, field -> {
             Annotation annotation = findAutowiredAnnotation(field);
+
+            if (annotation == null) {
+                return;
+            }
+
             if (Modifier.isStatic(field.getModifiers())) {
                 if (logger.isWarnEnabled()) {
                     logger.warn("Autowired annotation is not supported on static fields: " + field);
